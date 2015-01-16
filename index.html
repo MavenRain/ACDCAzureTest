@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>ACDC Test App</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/mobileservices/MobileServices.Web-1.1.0.min.js"></script>
+    <script src="angular-cdc.js"></script>
+    <script src="angular-cdc-azuremobileservices.js"></script>
+</head>
+<body ng-app="demoApp" ng-controller="personController">
+    <div>
+        <div>{{greeting}}</div>
+        <div class="entry" ng-repeat="entry in TodoItem"><div>{{entry.name}}</div></div>
+    </div>
+    <script>        
+        var personController = function ($scope) {
+            $scope.greeting = "Hello";
+            var angularCDCService = new AngularCloudDataConnector.DataService(new AngularCloudDataConnector.OfflineService(), new AngularCloudDataConnector.ConnectivityService());
+            $scope.initialize = function () {
+                angularCDCAzureMobileService.addSource("https://a-rest-ed-development.azure-mobile.net", "WLmrrqVoxUWynzPGaAuDKUgfJDcwnK26", ["TodoItem"]);                
+                angularCDCService.addSource(angularCDCAzureMobileService);
+                angularCDCService.connect(function (results) { },$scope,95432);
+            };
+            $scope.initialize();
+            $scope.sync = function () { angularCDCService.readAll(); };
+        };
+        angular.module("hiModule", []).controller("personController", function ($scope) { $scope.greeting = "Bye!"; });
+        angular.module("demoApp", ["AngularCDC", "AngularCDC.AzureMobileServices"])
+        .controller("demoCont", ["$scope", "angularCDCAzureMobileService", personController]);
+    </script>
+
+</body>
+
+</html>
